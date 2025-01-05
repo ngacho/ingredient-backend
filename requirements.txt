@@ -1,0 +1,2 @@
+fastapi[standard]
+ingredient_parser_nlp
