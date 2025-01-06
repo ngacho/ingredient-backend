@@ -16,7 +16,7 @@ class Ingredient(BaseModel):
 
 # Define the path to the CRF model relative to the script's location
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_FILE_PATH = os.path.join(SCRIPT_DIR, "model.crfmodel")
+MODEL_FILE_PATH = os.path.join(SCRIPT_DIR, "models/model.crfmodel")
 
 @app.get("/")
 async def read_root():
