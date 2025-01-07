@@ -1,7 +1,5 @@
-import azure.functions as func
 import os
 import fastapi
-from pydantic import BaseModel
 from typing import List
 from ingredient import Ingredient
 from ingredient_parser import parse_ingredients_crf
@@ -53,11 +51,3 @@ async def parse_ingredients_endpoint(ingredients: List[Ingredient]):
         parsed_responses.append(parsed_response)
     
     return parsed_responses
-
-# Azure Functions handler
-async def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
-    """
-    Main handler for Azure Functions. Processes all HTTP requests
-    and routes them through FastAPI application.
-    """
-    return await func.AsgiMiddleware(fastapi_app).handle_async(req, context)
