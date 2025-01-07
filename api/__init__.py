@@ -3,8 +3,8 @@ import azure.functions as func
 import os
 from fastapi import FastAPI
 
-from ingredients.ingredient import Ingredient
-from ingredients.ingredient_parser import parse_ingredients_crf
+from api.ingredient import Ingredient
+from api.ingredient_parser import parse_ingredients_crf
 
 fastapi_app = FastAPI()
 
@@ -16,8 +16,7 @@ MODEL_FILE_PATH = os.path.join(SCRIPT_DIR, "models/model-0601.crfmodel")
 async def read_root():
     return {"Hello": "World"}
 
-"""
-@fastapi_app.put("/")
+@fastapi_app.put("/ingredients")
 async def parse_ingredients_endpoint(ingredients: List[Ingredient]):
     parsed_responses = []  # List to store individual parsed responses
         
@@ -32,7 +31,5 @@ async def parse_ingredients_endpoint(ingredients: List[Ingredient]):
         parsed_responses.append(parsed_response)
     
     return parsed_responses
-"""
 
-async def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
-    return await func.AsgiMiddleware(fastapi_app).handle_async(req, context)
+app = func.AsgiFunctionApp(app=fastapi_app, http_auth_level=func.AuthLevel.ANONYMOUS)
