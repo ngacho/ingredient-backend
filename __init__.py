@@ -1,28 +1,22 @@
+import azure.functions as func
 import os
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
+from ingredient import Ingredient
 from ingredient_parser import parse_ingredients_crf
 
-app = FastAPI()
-
-class Ingredient(BaseModel):
-    name: str
-    amount: str
-    unit: str
-
-    def __str__(self):
-        return f"{self.amount} {self.unit} {self.name}"
+fastapi_app = FastAPI()
 
 # Define the path to the CRF model relative to the script's location
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_FILE_PATH = os.path.join(SCRIPT_DIR, "models/model-0601.crfmodel")
+MODEL_FILE_PATH = os.path.join(SCRIPT_DIR, "models/model.crfmodel")
 
-@app.get("/")
+@fastapi_app.get("/")
 async def read_root():
     return {"Hello": "World"}
 
-@app.put("/v2/ingredients")
+@fastapi_app.put("/v2/ingredients")
 async def parse_ingredients_endpoint(ingredients: List[Ingredient]):
     # Convert ingredients to strings
     sentences = [str(ingredient) for ingredient in ingredients]
@@ -31,7 +25,7 @@ async def parse_ingredients_endpoint(ingredients: List[Ingredient]):
     
     return parsed_response
 
-@app.put("/v2/iteration/ingredients")
+@fastapi_app.put("/v2/iteration/ingredients")
 async def parse_ingredients_endpoint(ingredients: List[Ingredient]):
     parsed_responses = []  # List to store individual parsed responses
         
@@ -46,3 +40,7 @@ async def parse_ingredients_endpoint(ingredients: List[Ingredient]):
         parsed_responses.append(parsed_response)
     
     return parsed_responses
+
+async def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
+    return await func.AsgiMiddleware(fastapi_app).handle_async(req, context)
+
